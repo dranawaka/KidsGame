@@ -5,23 +5,19 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useGameStore } from '@/store/game-store';
 import { useFruitShopStore } from '@/store/fruit-shop-store';
-import { useTargetShootStore } from '@/store/target-shoot-store';
 
 export default function Home() {
   const bubblePopStats = useGameStore((state) => state.stats);
   const fruitShopStats = useFruitShopStore((state) => state.stats);
-  const targetShootStats = useTargetShootStore((state) => state.stats);
   const initGame = useGameStore((state) => state.initGame);
   const initFruitShop = useFruitShopStore((state) => state.initFruitShop);
-  const initTargetShoot = useTargetShootStore((state) => state.initGame);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     initGame();
     initFruitShop();
-    initTargetShoot();
     setMounted(true);
-  }, [initGame, initFruitShop, initTargetShoot]);
+  }, [initGame, initFruitShop]);
 
   if (!mounted) {
     return (
@@ -67,7 +63,7 @@ export default function Home() {
             transition={{ delay: 0.3 }}
             className="text-lg md:text-xl text-gray-700 mb-12"
           >
-            Three fun ways to practice math skills!
+            Two fun ways to practice math skills!
           </motion.p>
 
           {/* Game Cards */}
@@ -75,7 +71,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto"
           >
             {/* Bubble Pop Math */}
             <Link href="/bubble-pop">
@@ -123,32 +119,10 @@ export default function Home() {
               </motion.div>
             </Link>
 
-            {/* Target Shoot */}
-            <Link href="/target-shoot">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white rounded-3xl p-8 shadow-xl cursor-pointer hover:shadow-2xl transition-all"
-              >
-                <div className="text-6xl mb-4">🎯</div>
-                <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-purple-600 mb-2">
-                  Target Shoot
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Shoot the correct answer! Fast-paced math action game
-                </p>
-                {targetShootStats.bestScore > 0 && (
-                  <div className="bg-red-50 rounded-xl p-3">
-                    <div className="text-2xl font-bold text-red-600">{targetShootStats.bestScore}</div>
-                    <div className="text-xs text-gray-600">Best Score</div>
-                  </div>
-                )}
-              </motion.div>
-            </Link>
           </motion.div>
 
           {/* Combined Stats */}
-          {(bubblePopStats.gamesPlayed > 0 || fruitShopStats.gamesPlayed > 0 || targetShootStats.gamesPlayed > 0) && (
+          {(bubblePopStats.gamesPlayed > 0 || fruitShopStats.gamesPlayed > 0) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -158,23 +132,23 @@ export default function Home() {
               <h3 className="text-lg font-bold text-gray-700 mb-4">Your Progress</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div>
-                  <p className="text-2xl font-bold text-purple-600">{bubblePopStats.gamesPlayed + fruitShopStats.gamesPlayed + targetShootStats.gamesPlayed}</p>
+                  <p className="text-2xl font-bold text-purple-600">{bubblePopStats.gamesPlayed + fruitShopStats.gamesPlayed}</p>
                   <p className="text-xs text-gray-600">Total Games</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{bubblePopStats.totalCorrect + fruitShopStats.totalCorrect + targetShootStats.totalCorrect}</p>
+                  <p className="text-2xl font-bold text-blue-600">{bubblePopStats.totalCorrect + fruitShopStats.totalCorrect}</p>
                   <p className="text-xs text-gray-600">Correct Answers</p>
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-green-600">
-                    {bubblePopStats.totalAttempts + fruitShopStats.totalAttempts + targetShootStats.totalAttempts > 0
-                      ? Math.round(((bubblePopStats.totalCorrect + fruitShopStats.totalCorrect + targetShootStats.totalCorrect) / (bubblePopStats.totalAttempts + fruitShopStats.totalAttempts + targetShootStats.totalAttempts)) * 100)
+                    {bubblePopStats.totalAttempts + fruitShopStats.totalAttempts > 0
+                      ? Math.round(((bubblePopStats.totalCorrect + fruitShopStats.totalCorrect) / (bubblePopStats.totalAttempts + fruitShopStats.totalAttempts)) * 100)
                       : 0}%
                   </p>
                   <p className="text-xs text-gray-600">Overall Accuracy</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-orange-600">{Math.max(bubblePopStats.bestScore, fruitShopStats.bestScore, targetShootStats.bestScore)}</p>
+                  <p className="text-2xl font-bold text-orange-600">{Math.max(bubblePopStats.bestScore, fruitShopStats.bestScore)}</p>
                   <p className="text-xs text-gray-600">Highest Score</p>
                 </div>
               </div>
@@ -195,7 +169,7 @@ export default function Home() {
 
       {/* Decorative floating elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {['🎈', '🍎', '🍌', '💰', '🎯', '⭐'].map((emoji, i) => (
+        {['🎈', '🍎', '🍌', '💰', '⭐'].map((emoji, i) => (
           <motion.div
             key={i}
             className="absolute text-4xl opacity-20"
