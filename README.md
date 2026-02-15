@@ -1,6 +1,6 @@
 # Kids Math Games 🎮🔢
 
-Two fun, interactive math games for kids aged 4-10!
+Three fun, interactive math games for kids aged 4-10!
 
 **✅ Status**: Fully functional and production-ready!
 
@@ -24,6 +24,16 @@ Drag and drop coins to pay for fruit orders! Learn money counting and multiplica
 - **Money Skills**: Counting coins, making change, multiplication
 - **Two Modes**: Practice (unlimited time) and Time Attack (60-120 seconds)
 - **Smart Hints**: Get help when you need it
+
+### 🎯 Target Shoot Math
+Shoot the correct answer target! Fast-paced action game for math fluency.
+
+- **10 Difficulty Levels**: From simple addition to master level
+- **Two Game Modes**: Practice (no timer) and Time Attack (timed)
+- **Moving Targets**: 6-10 targets bouncing across the screen
+- **Streak System**: Build combos for bonus points
+- **Adaptive Difficulty**: Auto-adjusts based on accuracy
+- **Operations**: +, -, ×, ÷
 
 ## Features
 
@@ -115,6 +125,8 @@ npm start
 │   │   └── page.tsx            # Bubble Pop game
 │   ├── fruit-shop/
 │   │   └── page.tsx            # Fruit Shop game
+│   ├── target-shoot/
+│   │   └── page.tsx            # Target Shoot game
 │   └── globals.css             # Global styles
 ├── components/
 │   ├── Bubble.tsx              # Bubble component
@@ -127,19 +139,27 @@ npm start
 │   ├── OrderCard.tsx           # Fruit order display
 │   ├── FruitShopGameScreen.tsx # Fruit Shop game view
 │   ├── FruitShopSettings.tsx   # Fruit Shop settings
-│   └── FruitShopGameOver.tsx   # Fruit Shop game over
+│   ├── FruitShopGameOver.tsx   # Fruit Shop game over
+│   ├── Target.tsx              # Target component
+│   ├── TargetShootGameScreen.tsx    # Target Shoot game view
+│   ├── TargetShootSettings.tsx      # Target Shoot settings
+│   └── TargetShootGameOver.tsx      # Target Shoot game over
 ├── lib/
 │   ├── game-logic.ts           # Bubble Pop logic
 │   ├── fruit-shop-logic.ts     # Fruit Shop logic
+│   ├── target-shoot-logic.ts   # Target Shoot logic
 │   ├── audio.ts                # Sound effects
 │   ├── storage.ts              # Bubble Pop storage
-│   └── fruit-shop-storage.ts   # Fruit Shop storage
+│   ├── fruit-shop-storage.ts   # Fruit Shop storage
+│   └── target-shoot-storage.ts # Target Shoot storage
 ├── store/
 │   ├── game-store.ts           # Bubble Pop state
-│   └── fruit-shop-store.ts     # Fruit Shop state
+│   ├── fruit-shop-store.ts     # Fruit Shop state
+│   └── target-shoot-store.ts   # Target Shoot state
 └── types/
     ├── game.ts                 # Bubble Pop types
-    └── fruit-shop.ts           # Fruit Shop types
+    ├── fruit-shop.ts           # Fruit Shop types
+    └── target-shoot.ts         # Target Shoot types
 ```
 
 ## Quick Links
@@ -149,6 +169,8 @@ npm start
 - **[DEVELOPMENT.md](DEVELOPMENT.md)** - Developer guide and extensions
 - **[FEATURE_CHECKLIST.md](FEATURE_CHECKLIST.md)** - Spec compliance verification
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Comprehensive feature list
+- **[FRUIT_SHOP_GUIDE.md](FRUIT_SHOP_GUIDE.md)** - Fruit Shop game guide
+- **[TARGET_SHOOT_GUIDE.md](TARGET_SHOOT_GUIDE.md)** - Target Shoot game guide
 
 ## License
 
