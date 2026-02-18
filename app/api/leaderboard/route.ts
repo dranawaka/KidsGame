@@ -43,7 +43,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isMongoConfigured()) {
-      return NextResponse.json({ success: true, madeBoard: false });
+      console.warn(
+        '[Leaderboard] MONGODB_URI is not set. Add it to .env.local to persist leaderboard to the database.'
+      );
+      return NextResponse.json({
+        success: true,
+        madeBoard: false,
+        persisted: false,
+      });
     }
 
     const db = await getDb();
@@ -54,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (existing) {
       // Replace only if new score is higher
       if (score > existing.score) {
-        await collection.updateOne(
+        const result = await collection.updateOne(
           { playerName, game },
           {
             $set: {
@@ -64,6 +71,9 @@ export async function POST(request: NextRequest) {
             },
           }
         );
+        if (!result.acknowledged) {
+          console.error('[Leaderboard] updateOne was not acknowledged by MongoDB');
+        }
       }
       // If new score is lower or equal, keep existing entry
     } else {
@@ -74,7 +84,10 @@ export async function POST(request: NextRequest) {
         game,
         date: new Date().toISOString(),
       };
-      await collection.insertOne(entry);
+      const result = await collection.insertOne(entry);
+      if (!result.acknowledged) {
+        console.error('[Leaderboard] insertOne was not acknowledged by MongoDB');
+      }
     }
 
     // Keep only the top entries per game — remove lowest scores beyond the limit
@@ -93,9 +106,17 @@ export async function POST(request: NextRequest) {
       .slice(0, MAX_ENTRIES_PER_GAME)
       .some((e) => e.playerName === playerName);
 
-    return NextResponse.json({ success: true, madeBoard });
+    return NextResponse.json({
+      success: true,
+      madeBoard,
+      persisted: true,
+    });
   } catch (error) {
-    console.error('Failed to add leaderboard entry:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('[Leaderboard] Failed to add entry:', message, error);
+    return NextResponse.json(
+      { error: 'Internal server error', persisted: false },
+      { status: 500 }
+    );
   }
 }
