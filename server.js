@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Load env from .env.local so MONGODB_URI is available in all environments
+require('dotenv').config({ path: '.env.local' });
+
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/mongodb';
+import { getDb, isMongoConfigured } from '@/lib/mongodb';
 
 const MAX_ENTRIES_PER_GAME = 10;
 
 export async function GET(request: NextRequest) {
   const game = request.nextUrl.searchParams.get('game');
+
+  if (!isMongoConfigured()) {
+    return NextResponse.json([]);
+  }
 
   try {
     const db = await getDb();
@@ -36,6 +40,10 @@ export async function POST(request: NextRequest) {
 
     if (score <= 0) {
       return NextResponse.json({ error: 'Score must be positive' }, { status: 400 });
+    }
+
+    if (!isMongoConfigured()) {
+      return NextResponse.json({ success: true, madeBoard: false });
     }
 
     const db = await getDb();
