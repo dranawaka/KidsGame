@@ -1,16 +1,29 @@
 import { MongoClient, Db } from 'mongodb';
+import { config } from 'dotenv';
+import { join } from 'path';
 
 const DB_NAME = 'kidsgame';
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
+let envLoaded = false;
+
+function ensureEnvLoaded(): void {
+  if (envLoaded) return;
+  envLoaded = true;
+  if (!process.env.MONGODB_URI) {
+    config({ path: join(process.cwd(), '.env.local') });
+  }
+}
 
 /** True when MONGODB_URI is set (leaderboard can persist to DB). */
 export function isMongoConfigured(): boolean {
+  ensureEnvLoaded();
   return Boolean(process.env.MONGODB_URI);
 }
 
 export async function getDb(): Promise<Db> {
+  ensureEnvLoaded();
   if (cachedDb) return cachedDb;
 
   const uri = process.env.MONGODB_URI;
