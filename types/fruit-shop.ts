@@ -87,13 +87,13 @@ export const FRUIT_ITEMS: FruitItem[] = [
   { id: 'juice', name: 'Juice', emoji: '🧃', category: 'drink' },
 ];
 
-// Coin definitions
+// Coin definitions — use darker shades so coins are visible on light backgrounds
 export const COIN_DEFINITIONS: Record<number, { label: string; color: string }> = {
-  1: { label: '$1', color: 'bg-amber-400' },
-  2: { label: '$2', color: 'bg-emerald-400' },
-  5: { label: '$5', color: 'bg-blue-400' },
-  10: { label: '$10', color: 'bg-purple-400' },
-  20: { label: '$20', color: 'bg-pink-400' },
+  1: { label: '$1', color: 'bg-amber-600' },
+  2: { label: '$2', color: 'bg-emerald-600' },
+  5: { label: '$5', color: 'bg-blue-600' },
+  10: { label: '$10', color: 'bg-purple-600' },
+  20: { label: '$20', color: 'bg-pink-600' },
 };
 
 // Level configurations

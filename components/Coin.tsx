@@ -49,7 +49,7 @@ export default function CoinComponent({ coin, onDragEnd, disabled = false, size 
       onDragEnd={handleDragEndInternal}
       whileHover={!disabled ? { scale: 1.1 } : {}}
       whileTap={!disabled ? { scale: 0.95 } : {}}
-      className={`${sizeClasses[size]} rounded-full ${coin.color} shadow-lg flex items-center justify-center font-bold text-white cursor-grab active:cursor-grabbing select-none border-4 border-white ${
+      className={`${sizeClasses[size]} rounded-full ${coin.color} shadow-lg flex items-center justify-center font-bold text-white cursor-grab active:cursor-grabbing select-none border-4 border-amber-900/50 ring-2 ring-gray-800 ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       } ${isDragging ? 'z-50' : 'z-10'}`}
       style={{

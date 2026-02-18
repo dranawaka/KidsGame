@@ -24,13 +24,12 @@ export default function PaymentTray({
 }: PaymentTrayProps) {
   const isPerfect = paidTotal === requiredTotal;
   const isOverpaid = paidTotal > requiredTotal;
-  const isUnderpaid = paidTotal < requiredTotal;
 
   return (
     <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 shadow-xl">
       <h3 className="text-xl font-bold text-gray-700 mb-4 text-center">💵 Payment Tray</h3>
       
-      {/* Total Display */}
+      {/* Total Display — only show what they paid; kid calculates the required total */}
       <div className="bg-white rounded-xl p-4 mb-4 text-center">
         <div className="text-sm text-gray-600 mb-1">You paid:</div>
         <div className={`text-4xl font-bold ${
@@ -38,45 +37,9 @@ export default function PaymentTray({
         }`}>
           ${paidTotal}
         </div>
-        <div className="text-sm text-gray-600 mt-1">Need: ${requiredTotal}</div>
       </div>
 
-      {/* Status Message */}
-      <AnimatePresence mode="wait">
-        {isPerfect && (
-          <motion.div
-            key="perfect"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-green-100 text-green-700 rounded-lg p-3 mb-4 text-center font-semibold"
-          >
-            ✅ Perfect! Click Submit!
-          </motion.div>
-        )}
-        {isOverpaid && paidTotal > 0 && (
-          <motion.div
-            key="overpaid"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-orange-100 text-orange-700 rounded-lg p-3 mb-4 text-center font-semibold"
-          >
-            ⚠️ Too much! Try removing some coins
-          </motion.div>
-        )}
-        {isUnderpaid && paidTotal > 0 && (
-          <motion.div
-            key="underpaid"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-blue-100 text-blue-700 rounded-lg p-3 mb-4 text-center font-semibold"
-          >
-            💡 Not enough! Add more coins
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Status Message — no hints; let the kid figure it out */}
 
       {/* Coins in Tray */}
       <div className="min-h-[120px] bg-white/50 rounded-xl p-4 mb-4">
@@ -93,7 +56,7 @@ export default function PaymentTray({
                   disabled={disabled}
                   whileHover={!disabled ? { scale: 1.1 } : {}}
                   whileTap={!disabled ? { scale: 0.95 } : {}}
-                  className={`w-14 h-14 rounded-full ${coin.color} shadow-lg flex items-center justify-center font-bold text-white border-4 border-white ${
+                  className={`w-14 h-14 rounded-full ${coin.color} shadow-lg flex items-center justify-center font-bold text-white border-4 border-amber-900/50 ring-2 ring-gray-800 ${
                     disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                   }`}
                 >
@@ -120,10 +83,10 @@ export default function PaymentTray({
         </button>
         <button
           onClick={onSubmit}
-          disabled={disabled || paidTotal !== requiredTotal}
+          disabled={disabled}
           className="px-4 py-3 bg-green-500 hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all transform hover:scale-105 disabled:transform-none shadow-lg"
         >
-          ✓ Submit
+          Pay
         </button>
       </div>
     </div>

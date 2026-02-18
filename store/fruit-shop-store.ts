@@ -14,6 +14,7 @@ import {
   isPaymentCorrect,
   calculateFruitShopScore,
   generateHints,
+  getLevelConfig,
 } from '@/lib/fruit-shop-logic';
 import {
   loadFruitShopSettings,
@@ -203,7 +204,7 @@ export const useFruitShopStore = create<FruitShopStore>((set, get) => ({
 
     if (isCorrect) {
       audioManager.playCorrect();
-      
+
       const newStreak = state.streak + 1;
       const points = calculateFruitShopScore(
         state.streak,
@@ -212,6 +213,21 @@ export const useFruitShopStore = create<FruitShopStore>((set, get) => ({
         state.currentOrder.total
       );
       const newScore = state.score + points;
+
+      // Level up when doing easily: 3 correct in a row (cap at level 10)
+      let nextSettings = state.settings;
+      let streakAfterLevelUp = newStreak;
+      if (newStreak === 3 && state.settings.level < 10) {
+        const newLevel = state.settings.level + 1;
+        const levelConfig = getLevelConfig(newLevel);
+        nextSettings = {
+          ...state.settings,
+          level: newLevel,
+          difficultyLevel: levelConfig.difficultyLevel,
+        };
+        saveFruitShopSettings(nextSettings);
+        streakAfterLevelUp = 0; // reset so they need 3 in a row again for next level
+      }
 
       // Streak milestones
       if (newStreak === 5) {
@@ -222,8 +238,9 @@ export const useFruitShopStore = create<FruitShopStore>((set, get) => ({
 
       set({
         score: newScore,
-        streak: newStreak,
+        streak: streakAfterLevelUp,
         questionIndex: state.questionIndex + 1,
+        ...(nextSettings !== state.settings && { settings: nextSettings }),
       });
 
       // Generate next order after a brief delay

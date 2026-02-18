@@ -82,42 +82,41 @@ export function generateOrder(level: number, previousItems: string[] = []): Orde
   };
 }
 
+// All coin types always available in the bank
+const ALL_COIN_VALUES = Object.keys(COIN_DEFINITIONS).map(Number).sort((a, b) => a - b);
+
 /**
- * Generate available coins for the level with smart quantities
+ * Generate available coins: all coin types ($1, $2, $5, $10, $20) with enough quantity for the order.
+ * Clicking a coin moves it to the payment tray.
  */
 export function generateCoinsForLevel(level: number, orderTotal: number): Coin[] {
-  const config = getLevelConfig(level);
   const coins: Coin[] = [];
-  
-  // Calculate how many of each coin to provide
   const coinCounts: Record<number, number> = {};
-  
-  config.availableCoinValues.forEach(value => {
+
+  ALL_COIN_VALUES.forEach(value => {
     // Base count - ensure we have enough to make the total
     let count = Math.ceil(orderTotal / value) + 2; // Extra coins for flexibility
-    
-    // Adjust counts to be reasonable
+
     if (value === 1) {
-      count = Math.min(12, count); // Max 12 $1 coins
+      count = Math.min(12, count);
     } else if (value === 2) {
-      count = Math.min(8, count); // Max 8 $2 coins
+      count = Math.min(8, count);
     } else if (value === 5) {
-      count = Math.min(6, count); // Max 6 $5 coins
+      count = Math.min(6, count);
     } else if (value === 10) {
-      count = Math.min(4, count); // Max 4 $10 bills
+      count = Math.min(4, count);
     } else if (value === 20) {
-      count = Math.min(3, count); // Max 3 $20 bills
+      count = Math.min(3, count);
     }
-    
+
     coinCounts[value] = count;
   });
-  
-  // Create coin objects
+
   let coinId = 0;
   Object.entries(coinCounts).forEach(([value, count]) => {
     const coinValue = parseInt(value);
     const def = COIN_DEFINITIONS[coinValue];
-    
+
     for (let i = 0; i < count; i++) {
       coins.push({
         id: `coin-${coinValue}-${coinId++}`,
@@ -127,7 +126,7 @@ export function generateCoinsForLevel(level: number, orderTotal: number): Coin[]
       });
     }
   });
-  
+
   return shuffle(coins);
 }
 
@@ -211,7 +210,8 @@ export function calculateFruitShopScore(
   orderTotal: number
 ): number {
   if (!isCorrect) {
-    return mode === 'timeattack' ? -2 : 0;
+    // Reduce score for wrong amount paid (both modes)
+    return mode === 'timeattack' ? -2 : -1;
   }
   
   const basePoints = 10;

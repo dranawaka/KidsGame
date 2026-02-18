@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LeaderboardEntry, GameType, getLeaderboardForGame } from '@/lib/leaderboard';
+import { LeaderboardEntry, GameType, fetchLeaderboardForGame } from '@/lib/leaderboard';
 
 interface LeaderboardProps {
   onClose: () => void;
@@ -27,7 +27,23 @@ function formatDate(dateStr: string): string {
 
 export default function Leaderboard({ onClose }: LeaderboardProps) {
   const [activeGame, setActiveGame] = useState<GameType>('bubble-pop');
-  const entries = getLeaderboardForGame(activeGame);
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadEntries = useCallback(async (game: GameType) => {
+    setLoading(true);
+    const data = await fetchLeaderboardForGame(game);
+    setEntries(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadEntries(activeGame);
+  }, [activeGame, loadEntries]);
+
+  const handleTabChange = (game: GameType) => {
+    setActiveGame(game);
+  };
 
   return (
     <motion.div
@@ -58,7 +74,7 @@ export default function Leaderboard({ onClose }: LeaderboardProps) {
             return (
               <button
                 key={game}
-                onClick={() => setActiveGame(game)}
+                onClick={() => handleTabChange(game)}
                 className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all ${
                   isActive
                     ? `bg-${color}-100 text-${color}-700 ring-2 ring-${color}-300`
@@ -90,7 +106,18 @@ export default function Leaderboard({ onClose }: LeaderboardProps) {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              {entries.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-12 text-gray-400">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="text-4xl inline-block mb-3"
+                  >
+                    ⏳
+                  </motion.div>
+                  <p className="text-lg font-medium">Loading scores...</p>
+                </div>
+              ) : entries.length === 0 ? (
                 <div className="text-center py-12 text-gray-400">
                   <div className="text-5xl mb-3">📋</div>
                   <p className="text-lg font-medium">No scores yet!</p>

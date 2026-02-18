@@ -41,24 +41,11 @@ export default function OrderCard({ order }: OrderCardProps) {
             <span className="text-gray-600">Price each:</span>
             <span className="font-bold text-blue-600">${order.unitPrice}</span>
           </div>
-          <div className="border-t-2 border-purple-200 pt-2 mt-2">
-            <div className="flex justify-between items-center text-2xl">
-              <span className="text-gray-700 font-semibold">Total:</span>
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.4, type: 'spring', stiffness: 150 }}
-                className="font-bold text-green-600"
-              >
-                ${order.total}
-              </motion.span>
-            </div>
-          </div>
         </div>
         
-        {/* Helpful hint */}
-        <div className="mt-4 text-sm text-gray-500 italic">
-          {order.quantity} × ${order.unitPrice} = ?
+        {/* Let the kid calculate — no total shown */}
+        <div className="mt-4 text-lg font-semibold text-gray-700">
+          How much? {order.quantity} × ${order.unitPrice} = ?
         </div>
       </div>
     </motion.div>

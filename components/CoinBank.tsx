@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Coin } from '@/types/fruit-shop';
+import { Coin, COIN_DEFINITIONS } from '@/types/fruit-shop';
 
 interface CoinBankProps {
   coins: Coin[];
@@ -9,11 +9,9 @@ interface CoinBankProps {
   disabled?: boolean;
 }
 
+const COIN_VALUES_ORDERED = [1, 2, 5, 10, 20];
+
 export default function CoinBank({ coins, onCoinClick, disabled = false }: CoinBankProps) {
-  // Debug: Log coins
-  console.log('CoinBank - Total coins:', coins.length);
-  console.log('CoinBank - Coins:', coins);
-  
   // Group coins by value for organized display
   const coinsByValue: Record<number, Coin[]> = {};
   coins.forEach(coin => {
@@ -26,14 +24,27 @@ export default function CoinBank({ coins, onCoinClick, disabled = false }: CoinB
   const sortedValues = Object.keys(coinsByValue)
     .map(Number)
     .sort((a, b) => a - b);
-  
-  console.log('CoinBank - Sorted values:', sortedValues);
-  console.log('CoinBank - Coins by value:', coinsByValue);
 
   return (
     <div className="bg-gradient-to-br from-amber-100 to-yellow-200 backdrop-blur rounded-2xl p-6 shadow-xl border-3 border-amber-400">
       <h3 className="text-xl font-bold text-amber-900 mb-4 text-center">💰 Coin Bank</h3>
-      
+
+      {/* Color legend: $1 amber-600, $2 emerald-600, $5 blue-600, $10 purple-600, $20 pink-600 */}
+      <div className="flex flex-wrap justify-center gap-2 mb-4">
+        {COIN_VALUES_ORDERED.map((value) => {
+          const def = COIN_DEFINITIONS[value];
+          if (!def) return null;
+          return (
+            <div
+              key={value}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-full ${def.color} border-2 border-gray-800 text-white text-sm font-bold shadow`}
+            >
+              <span>{def.label}</span>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="space-y-4">
         {sortedValues.map(value => (
           <div key={value} className="space-y-2">
