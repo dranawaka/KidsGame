@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useGameStore } from '@/store/game-store';
 import { useFruitShopStore } from '@/store/fruit-shop-store';
+import { Player, loadPlayer, savePlayer, clearPlayer } from '@/lib/player';
+import PlayerLogin from '@/components/PlayerLogin';
+import Leaderboard from '@/components/Leaderboard';
 
 export default function Home() {
   const bubblePopStats = useGameStore((state) => state.stats);
@@ -12,12 +15,25 @@ export default function Home() {
   const initGame = useGameStore((state) => state.initGame);
   const initFruitShop = useFruitShopStore((state) => state.initFruitShop);
   const [mounted, setMounted] = useState(false);
+  const [player, setPlayer] = useState<Player | null>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   useEffect(() => {
     initGame();
     initFruitShop();
+    setPlayer(loadPlayer());
     setMounted(true);
   }, [initGame, initFruitShop]);
+
+  const handleLogin = (p: Player) => {
+    savePlayer(p);
+    setPlayer(p);
+  };
+
+  const handleSwitchPlayer = () => {
+    clearPlayer();
+    setPlayer(null);
+  };
 
   if (!mounted) {
     return (
@@ -27,15 +43,36 @@ export default function Home() {
     );
   }
 
+  if (!player) {
+    return <PlayerLogin onLogin={handleLogin} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full">
-        {/* Main Menu */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="text-center"
         >
+          {/* Player Greeting */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-center gap-3 mb-4"
+          >
+            <div className="bg-white/80 backdrop-blur rounded-full px-5 py-2 shadow-md flex items-center gap-3">
+              <span className="text-2xl">{player.avatar}</span>
+              <span className="font-bold text-gray-700">Hi, {player.name}!</span>
+              <button
+                onClick={handleSwitchPlayer}
+                className="text-xs text-purple-500 hover:text-purple-700 font-medium ml-2 transition-colors"
+              >
+                Switch
+              </button>
+            </div>
+          </motion.div>
+
           {/* Logo/Title */}
           <motion.div
             animate={{
@@ -121,6 +158,23 @@ export default function Home() {
 
           </motion.div>
 
+          {/* Leaderboard Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="mb-8"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowLeaderboard(true)}
+              className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white rounded-2xl font-bold text-xl shadow-lg transition-all"
+            >
+              🏆 Leaderboard
+            </motion.button>
+          </motion.div>
+
           {/* Combined Stats */}
           {(bubblePopStats.gamesPlayed > 0 || fruitShopStats.gamesPlayed > 0) && (
             <motion.div
@@ -164,6 +218,14 @@ export default function Home() {
           >
             Made with ❤️ for kids who love math
           </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="mt-2 text-gray-400 text-xs"
+          >
+            Built by Dilan H. Ranawaka
+          </motion.p>
         </motion.div>
       </div>
 
@@ -192,6 +254,13 @@ export default function Home() {
           </motion.div>
         ))}
       </div>
+
+      {/* Leaderboard Modal */}
+      <AnimatePresence>
+        {showLeaderboard && (
+          <Leaderboard onClose={() => setShowLeaderboard(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

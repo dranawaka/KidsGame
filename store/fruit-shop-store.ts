@@ -24,6 +24,8 @@ import {
   saveRecentItems,
 } from '@/lib/fruit-shop-storage';
 import { audioManager } from '@/lib/audio';
+import { loadPlayer } from '@/lib/player';
+import { addLeaderboardEntry } from '@/lib/leaderboard';
 
 interface FruitShopStore extends FruitShopState {
   settings: FruitShopSettings;
@@ -108,12 +110,16 @@ export const useFruitShopStore = create<FruitShopStore>((set, get) => ({
   },
 
   stopGame: () => {
-    const { score, stats, questionIndex, streak } = get();
-    const correctCount = questionIndex; // In Fruit Shop, each submission is one question
+    const { score, stats, questionIndex } = get();
+    const correctCount = questionIndex;
     
     recordFruitShopGame(correctCount, questionIndex, score, 0);
 
-    // Check for new best score
+    const player = loadPlayer();
+    if (player && score > 0) {
+      addLeaderboardEntry(player.name, player.avatar, score, 'fruit-shop');
+    }
+
     if (score > stats.bestScore) {
       audioManager.playCelebration();
     } else {
@@ -122,7 +128,7 @@ export const useFruitShopStore = create<FruitShopStore>((set, get) => ({
 
     set({
       isPlaying: false,
-      stats: loadFruitShopStats(), // Reload updated stats
+      stats: loadFruitShopStats(),
     });
   },
 

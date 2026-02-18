@@ -1,6 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { loadPlayer } from '@/lib/player';
+import Leaderboard from './Leaderboard';
 
 interface GameOverProps {
   score: number;
@@ -11,6 +14,9 @@ interface GameOverProps {
 }
 
 export default function GameOver({ score, bestScore, isNewBest, onPlayAgain, onMainMenu }: GameOverProps) {
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const player = loadPlayer();
+
   const getStars = (score: number) => {
     if (score === 0) return 0;
     if (score < 50) return 1;
@@ -25,6 +31,10 @@ export default function GameOver({ score, bestScore, isNewBest, onPlayAgain, onM
     "Great job! 🎉",
     "Amazing! You're a math star! 🌟",
   ];
+
+  if (showLeaderboard) {
+    return <Leaderboard onClose={() => setShowLeaderboard(false)} />;
+  }
 
   return (
     <motion.div
@@ -52,6 +62,19 @@ export default function GameOver({ score, bestScore, isNewBest, onPlayAgain, onM
             </motion.div>
           ))}
         </div>
+
+        {/* Player */}
+        {player && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mb-3"
+          >
+            <span className="text-2xl">{player.avatar}</span>
+            <span className="ml-2 font-bold text-gray-700">{player.name}</span>
+          </motion.div>
+        )}
 
         {/* Message */}
         <motion.h2
@@ -103,6 +126,12 @@ export default function GameOver({ score, bestScore, isNewBest, onPlayAgain, onM
             className="w-full px-6 py-4 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold text-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400"
           >
             Play Again
+          </button>
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            className="w-full px-6 py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white rounded-xl font-bold text-lg transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          >
+            🏆 Leaderboard
           </button>
           <button
             onClick={onMainMenu}

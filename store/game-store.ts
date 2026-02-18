@@ -3,6 +3,8 @@ import { GameSettings, GameState, GameStats, DEFAULT_SETTINGS } from '@/types/ga
 import { generateQuestionForLevel, calculateScore, adjustLevel } from '@/lib/game-logic';
 import { loadSettings, saveSettings, loadStats, recordGame } from '@/lib/storage';
 import { audioManager } from '@/lib/audio';
+import { loadPlayer } from '@/lib/player';
+import { addLeaderboardEntry } from '@/lib/leaderboard';
 
 interface GameStore extends GameState {
   settings: GameSettings;
@@ -83,7 +85,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     
     recordGame(correctCount, questionIndex, score);
 
-    // Check for new best score
+    const player = loadPlayer();
+    if (player && score > 0) {
+      addLeaderboardEntry(player.name, player.avatar, score, 'bubble-pop');
+    }
+
     if (score > stats.bestScore) {
       audioManager.playCelebration();
     } else {
@@ -92,7 +98,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     set({
       isPlaying: false,
-      stats: loadStats(), // Reload updated stats
+      stats: loadStats(),
     });
   },
 

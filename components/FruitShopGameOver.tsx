@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { loadPlayer } from '@/lib/player';
+import Leaderboard from './Leaderboard';
 
 interface FruitShopGameOverProps {
   score: number;
@@ -19,6 +22,13 @@ export default function FruitShopGameOver({
   onPlayAgain,
   onMainMenu,
 }: FruitShopGameOverProps) {
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const player = loadPlayer();
+
+  if (showLeaderboard) {
+    return <Leaderboard onClose={() => setShowLeaderboard(false)} />;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -43,6 +53,19 @@ export default function FruitShopGameOver({
             {isNewBest ? '🏆' : '🎉'}
           </motion.div>
           
+          {/* Player */}
+          {player && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mb-3"
+            >
+              <span className="text-2xl">{player.avatar}</span>
+              <span className="ml-2 font-bold text-gray-700">{player.name}</span>
+            </motion.div>
+          )}
+
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
             {isNewBest ? 'New Best Score!' : 'Great Job!'}
           </h2>
@@ -87,6 +110,16 @@ export default function FruitShopGameOver({
               className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-bold text-xl transition-all transform hover:scale-105 shadow-lg"
             >
               🔄 Play Again
+            </motion.button>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              onClick={() => setShowLeaderboard(true)}
+              className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white rounded-xl font-bold text-xl transition-all transform hover:scale-105 shadow-lg"
+            >
+              🏆 Leaderboard
             </motion.button>
             
             <motion.button
